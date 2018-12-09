@@ -5,6 +5,7 @@ class vim (
   $package_name             = $::vim::params::package_name,
   $package_list             = $::vim::params::package_list,
 
+  $vim_path                 = $::vim::params::vim_path,
   $config_dir_path          = $::vim::params::config_dir_path,
   $config_dir_purge         = false,
   $config_dir_recurse       = true,
