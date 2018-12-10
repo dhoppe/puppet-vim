@@ -27,11 +27,20 @@ class vim::config {
   }
 
   if $::vim::default_editor {
+    # Fedora/RedHat systems don't have /etc/alternatives/editor out of the box.
+    # The below settings match those used in Debian 9
+    exec { 'add-editor-alternative':
+      path    => '/usr/bin:/usr/sbin/:/bin:/sbin',
+      command => "update-alternatives --install /usr/bin/editor editor ${::vim::vim_path} 30",
+      unless  => 'test -L /etc/alternatives/editor',
+      require => $::vim::config_file_require,
+    }
+
     exec { 'update-alternatives':
       path    => '/usr/bin:/usr/sbin/:/bin:/sbin',
-      command => 'update-alternatives --set editor /usr/bin/vim.basic',
-      unless  => 'test /etc/alternatives/editor -ef /usr/bin/vim.basic',
-      require => $::vim::config_file_require,
+      command => "update-alternatives --set editor ${::vim::vim_path}",
+      unless  => "test /etc/alternatives/editor -ef ${::vim::vim_path}",
+      require => Exec['add-editor-alternative'],
     }
   }
 }
